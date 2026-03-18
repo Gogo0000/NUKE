@@ -8,7 +8,7 @@ source.include_exts = py,png,jpg,kv,atlas,m4a
 
 version = 1.0
 
-requirements = python3,kivy==2.3.0,requests,certifi,urllib3,charset-normalizer,idna
+requirements = python3,kivy==2.2.1,requests,certifi,urllib3,charset-normalizer,idna
 
 orientation = portrait
 fullscreen = 1
