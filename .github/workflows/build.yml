@@ -16,7 +16,7 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Install dependencies
+      - name: Install system dependencies
         run: |
           sudo apt update
           sudo apt install -y \
@@ -25,21 +25,29 @@ jobs:
             pkg-config zlib1g-dev libncurses5-dev \
             libncursesw5-dev cmake libffi-dev libssl-dev \
             build-essential ccache
+
+      - name: Install buildozer and cython
+        run: |
+          pip install --upgrade pip
           pip install buildozer cython
 
-      - name: Accept Android SDK licenses
+      - name: Pre-accept Android SDK licenses
         run: |
           mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
-          echo -e "\n24333f8a63b6825ea9c5514f83c2829b004d1fee" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-          echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-preview-license
-          yes | sudo $(which sdkmanager) --licenses 2>/dev/null || true
+          printf "\n24333f8a63b6825ea9c5514f83c2829b004d1fee\nd56f5187479451eabf01fb78af6dfcb131a6481e\n" \
+            > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
+          printf "\n84831b9409646a918e30573bab4c9c91346d8abd\n" \
+            > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-preview-license
+          printf "\n33b6a2b64607f11b759f320ef9dff4ae5c47d97a\n" \
+            > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-tools-license
 
       - name: Build APK
         run: |
-          buildozer -v android debug
+          yes | buildozer -v android debug 2>&1
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: ShinsooApp-APK
           path: bin/*.apk
+          if-no-files-found: warn
